@@ -1,3 +1,6 @@
+.DS_Store
+
+logs/
 target/
 **/target/
 pom.xml.tag
