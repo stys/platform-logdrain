@@ -6,7 +6,6 @@ import org.productivity.java.syslog4j.server.SyslogServerSessionEventHandlerIF;
 import org.productivity.java.syslog4j.util.SyslogUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 
@@ -16,7 +15,7 @@ import java.util.Date;
 /** Basic implementation of syslog event handler */
 public class MainSyslogEventHandler implements SyslogServerSessionEventHandlerIF {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MainSyslogEventHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger("syslog");
 
     @Override
     public void event(Object session, SyslogServerIF syslogServerIF, SocketAddress socketAddress, SyslogServerEventIF event) {

@@ -9,6 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -33,7 +35,7 @@ public class Main {
         ConfigurableEnvironment environment = context.getEnvironment();
         MutablePropertySources propertySources = environment.getPropertySources();
         String propertiesFilename = System.getProperty(WORKER_PROPERTIES_KEY, DEFAULT_WORKER_PROPERTIES_FILENAME);
-        LOG.debug("Loading properties from file: {}", propertiesFilename);
+        LOG.info("Loading properties from file: {}", propertiesFilename);
         try (FileInputStream fis = new FileInputStream(new File(propertiesFilename))) {
             Properties properties = new Properties();
             properties.load(fis);
@@ -48,18 +50,12 @@ public class Main {
         context.register(ApplicationConfiguration.class);
         context.refresh();
 
-        // Start application
-        // SyslogServerIF server = context.getBean(SyslogServerIF.class);
-        // server.run();
+        SyslogServerIF syslogServer = context.getBean(SyslogServerIF.class);
+        LogFileUploadService uploadService = context.getBean(LogFileUploadService.class);
 
-        LogFileUploadService service = context.getBean(LogFileUploadService.class);
-        service.start();
-
-        LOG.info("Hey!");
-        Thread.sleep(62000);
-        LOG.info("Hop!");
-        Thread.sleep(63000);
-        LOG.info("What");
+        Executor executor = Executors.newFixedThreadPool(2);
+        executor.execute(syslogServer::run);
+        executor.execute(uploadService::start);
 
     }
 

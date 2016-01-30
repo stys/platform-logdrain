@@ -3,10 +3,13 @@ package com.stys.platform.logdrain;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import org.productivity.java.syslog4j.SyslogConfigIF;
+import org.productivity.java.syslog4j.SyslogRuntimeException;
 import org.productivity.java.syslog4j.server.SyslogServer;
 import org.productivity.java.syslog4j.server.SyslogServerConfigIF;
 import org.productivity.java.syslog4j.server.SyslogServerIF;
 import org.productivity.java.syslog4j.server.SyslogServerSessionEventHandlerIF;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +22,8 @@ import java.nio.file.Paths;
 /** */
 @Configuration
 public class ApplicationConfiguration {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ApplicationConfiguration.class);
 
     @Autowired
     private Environment environment;
@@ -42,7 +47,45 @@ public class ApplicationConfiguration {
 
         config.addEventHandler(syslogServerSessionEventHandler());
 
-        return server;
+        return new SyslogServerIF() {
+
+            @Override
+            public void initialize(String s, SyslogServerConfigIF syslogServerConfigIF) throws SyslogRuntimeException {
+                server.initialize(s, syslogServerConfigIF);
+            }
+
+            @Override
+            public String getProtocol() {
+                return server.getProtocol();
+            }
+
+            @Override
+            public SyslogServerConfigIF getConfig() {
+                return server.getConfig();
+            }
+
+            @Override
+            public void run() {
+                LOG.info("Starting syslog server: protocol - {}, port - {}", protocol, port);
+                server.run();
+            }
+
+            @Override
+            public Thread getThread() {
+                return server.getThread();
+            }
+
+            @Override
+            public void setThread(Thread thread) {
+                server.setThread(thread);
+            }
+
+            @Override
+            public void shutdown() {
+                server.shutdown();
+            }
+
+        };
     }
 
     @Bean
