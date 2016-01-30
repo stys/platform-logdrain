@@ -131,12 +131,11 @@ public class LogFileUploadService {
                     continue;
                 }
 
+            }
 
-                boolean valid = key.reset();
-                if (!valid) {
-                    throw new RuntimeException("Watch key is invalid");
-                }
-
+            boolean valid = key.reset();
+            if (!valid) {
+                throw new RuntimeException("Watch key is invalid");
             }
 
         }
