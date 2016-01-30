@@ -24,7 +24,7 @@ public class MainSyslogEventHandler implements SyslogServerSessionEventHandlerIF
         String level = SyslogUtility.getLevelString(event.getLevel());
         String message = event.getMessage();
 
-        LOG.info(MarkerFactory.getMarker(level), "{}; {}; {}", date, facility, message);
+        LOG.info(MarkerFactory.getMarker(level), "{}", message);
     }
 
     @Override
